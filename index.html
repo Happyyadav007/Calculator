@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Asumit ka Stylish Calculator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(-45deg, #6a11cb, #2575fc, #ff758c, #ff7eb3);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .calculator {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      padding: 40px 30px;
+      width: 360px;
+      color: #fff;
+      transition: transform 0.3s ease;
+    }
+
+    .calculator:hover {
+      transform: scale(1.02);
+    }
+
+    .calculator img.logo {
+      width: 70px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
+    }
+
+    .calculator h2 {
+      margin-bottom: 25px;
+      font-size: 2em;
+      color: #fff;
+      text-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .calculator input[type="number"] {
+      width: 90%;
+      padding: 14px;
+      margin: 12px 0;
+      font-size: 1em;
+      border: 1px solid #ffffff55;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      outline: none;
+      transition: transform 0.2s, box-shadow 0.3s ease;
+    }
+
+    .calculator input:focus {
+      border-color: #ffffff;
+      box-shadow: 0 0 14px #00f0ff80;
+      transform: scale(1.03);
+    }
+
+    .calculator input::placeholder {
+      color: #ffffffaa;
+    }
+
+    .operators {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .operators button {
+      padding: 14px 0;
+      font-size: 1.3em;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      color: white;
+      transition: 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .operators button:active {
+      transform: scale(1.1);
+    }
+
+    .btn-plus { background: linear-gradient(to right, #00f0ff, #6a11cb); }
+    .btn-minus { background: linear-gradient(to right, #ff6a00, #ee0979); }
+    .btn-multiply { background: linear-gradient(to right, #43e97b, #38f9d7); }
+    .btn-divide { background: linear-gradient(to right, #f7971e, #ffd200); }
+
+    .operators button:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 16px rgba(255,255,255,0.5);
+    }
+
+    .calculator button.calculate-btn {
+      margin-top: 25px;
+      padding: 14px 36px;
+      font-weight: bold;
+      font-size: 1em;
+      border-radius: 14px;
+      border: none;
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .calculator button.calculate-btn:hover {
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(1.08);
+    }
+
+    #result {
+      margin-top: 22px;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #fff;
+      animation: fadeIn 0.5s ease-in-out;
+      text-shadow: 0 0 10px #00000030;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .bounce {
+      animation: bounce 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <audio id="clickSound" src="click.mp3" preload="auto"></audio>
+    <audio id="successSound" src="success.mp3" preload="auto"></audio>
+    <audio id="waitSound" src="Yek.mp3" preload="auto"></audio>
+
+    <img class="logo" src="logo.png" alt="Logo">
+    <h2>Asumit ka Stylish Calculator</h2>
+    <input type="number" id="num1" placeholder="First number">
+
+    <div class="operators">
+      <button class="btn-plus" onclick="playClick(); setOperator('+')"><i class="fas fa-plus"></i></button>
+      <button class="btn-minus" onclick="playClick(); setOperator('-')"><i class="fas fa-minus"></i></button>
+      <button class="btn-multiply" onclick="playClick(); setOperator('*')"><i class="fas fa-times"></i></button>
+      <button class="btn-divide" onclick="playClick(); setOperator('/')"><i class="fas fa-divide"></i></button>
+    </div>
+
+    <input type="number" id="num2" placeholder="Second number">
+    <input type="hidden" id="operator">
+    
+    <button class="calculate-btn" onclick="calculate()">Calculate</button>
+    <p id="result"></p>
+  </div>
+
+  <script>
+  const clickSound = document.getElementById("clickSound");
+  const successSound = document.getElementById("successSound");
+  const waitSound = document.getElementById("waitSound");
+
+  let inactivityTimer;
+
+  function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+      waitSound.currentTime = 0;
+      waitSound.play();
+    }, 3000);
+  }
+
+  function playClick() {
+    clickSound.currentTime = 0;
+    clickSound.play();
+    resetInactivityTimer();
+  }
+
+  function setOperator(op) {
+    document.getElementById('operator').value = op;
+    resetInactivityTimer();
+  }
+
+  function calculate() {
+    resetInactivityTimer();
+    const num1 = parseFloat(document.getElementById("num1").value);
+    const num2 = parseFloat(document.getElementById("num2").value);
+    const operator = document.getElementById("operator").value;
+    let result;
+
+    if (isNaN(num1) || isNaN(num2)) {
+      result = "Please enter valid numbers.";
+    } else {
+      switch (operator) {
+        case "+": result = num1 + num2; break;
+        case "-": result = num1 - num2; break;
+        case "*": result = num1 * num2; break;
+        case "/": result = num2 !== 0 ? num1 / num2 : "Cannot divide by zero."; break;
+        default: result = "Please select an operator.";
+      }
+    }
+
+    const resultEl = document.getElementById("result");
+    resultEl.textContent = `Result: ${result}`;
+    resultEl.classList.remove("bounce");
+    void resultEl.offsetWidth;
+    resultEl.classList.add("bounce");
+
+    if (!isNaN(result) && operator) {
+      successSound.currentTime = 0;
+      successSound.play();
+    }
+  }
+
+  // Start inactivity timer when page loads
+  window.onload = resetInactivityTimer;
+</script>
+</body>
+</html>
